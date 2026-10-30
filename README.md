@@ -1,8 +1,8 @@
-# LocoFuse — diverse-member neural ensembles for noise event removal
+# EnsembleSE-Indic — diverse-member neural speech-enhancement ensembles for noise event removal
 
 **IndoML Datathon 2026 · Track 2 (Noise Event Removal) · team marchmello01 · 2nd place in Phase 1**
 
-LocoFuse removes noise events from Indian-language speech while keeping it recognisable by the mandated ASR model
+EnsembleSE-Indic removes noise events from Indian-language speech while keeping it recognisable by the mandated ASR model
 (SraVaani-1.0). The final Phase 2 system is a fixed ensemble of four neural enhancer architectures (seven
 checkpoints) whose TF-Locoformer slot fuses four differently-trained members, with eight-view test-time
 augmentation, applied identically to every clip.
