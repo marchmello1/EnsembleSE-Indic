@@ -4,130 +4,249 @@
 <meta charset="utf-8">
 <title>EnsembleSE-Indic — IndoML 2026 Track 2 technical report</title>
 <style>
-  @page { size: 8.5in 11in; margin: 0.75in 0.625in 1in 0.625in; }
+  @page { size: 8.5in 11in; margin: 0.75in 0.625in 0.9in 0.625in; }
   html, body { margin: 0; padding: 0; background: #fff; color: #000; }
   body { font-family: "Times New Roman", "Nimbus Roman", "Liberation Serif", Times, serif; font-size: 10pt;
-         line-height: 1.18; hyphens: auto; -webkit-hyphens: auto; text-align: justify; }
-  .title { text-align: center; font-size: 22pt; line-height: 1.12; margin: 0 0 4pt; font-weight: normal; }
-  .subtitle { text-align: center; font-size: 11pt; margin: 0 0 10pt; }
-  .author { text-align: center; font-size: 11pt; margin: 0 0 14pt; }
+         line-height: 1.16; hyphens: auto; -webkit-hyphens: auto; text-align: justify; }
+  math { font-family: "Latin Modern Math", "STIX Two Math", "Cambria Math", "Times New Roman", serif; font-size: 10.5pt; }
+  .title { text-align: center; font-size: 21pt; line-height: 1.12; margin: 0 0 4pt; }
+  .subtitle { text-align: center; font-size: 11pt; margin: 0 0 8pt; }
+  .author { text-align: center; font-size: 11pt; margin: 0 0 12pt; }
   .author .aff { font-style: italic; font-size: 10pt; }
   .cols { column-count: 2; column-gap: 0.25in; column-fill: auto; }
-  .abstract { font-weight: bold; font-size: 9pt; margin: 0 0 8pt; }
-  .abstract i { font-weight: bold; }
+  .abstract { font-weight: bold; font-size: 9pt; margin: 0 0 4pt; }
+  .keywords { font-weight: bold; font-size: 9pt; margin: 0 0 6pt; }
   h2 { font-size: 10pt; font-weight: normal; font-variant: small-caps; text-align: center; letter-spacing: 0.02em;
-       margin: 10pt 0 5pt; break-after: avoid; }
-  h2 .num { margin-right: 4pt; }
-  p { margin: 0 0 0; text-indent: 1em; }
-  p.first, h2 + p { text-indent: 0; }
+       margin: 8pt 0 4pt; break-after: avoid; }
+  h3 { font-size: 10pt; font-weight: normal; font-style: italic; margin: 5pt 0 2pt; break-after: avoid; }
+  p { margin: 0; text-indent: 1em; }
+  h2 + p, h3 + p, p.first, .fig + p, .tablewrap + p { text-indent: 0; }
   .run { font-style: italic; }
-  .eq { text-align: center; margin: 4pt 0; text-indent: 0; font-style: italic; }
-  table { border-collapse: collapse; width: 100%; font-size: 7.6pt; margin: 4pt 0 2pt; break-inside: avoid; }
+  .eq { display: flex; align-items: center; margin: 4pt 0; }
+  .eq .body { flex: 1; text-align: center; }
+  .eq .num { width: 2.2em; text-align: right; }
+  ul.contrib { margin: 2pt 0 2pt 0; padding-left: 1.2em; }
+  ul.contrib li { margin-bottom: 1.5pt; }
+  table { border-collapse: collapse; width: 100%; font-size: 7.5pt; margin: 2pt 0; }
   caption { caption-side: top; font-variant: small-caps; font-size: 8pt; margin-bottom: 3pt; text-align: center; }
-  th, td { padding: 1.4pt 2pt; text-align: center; }
+  th, td { padding: 1.2pt 2pt; text-align: center; }
   td:first-child, th:first-child { text-align: left; }
   thead tr { border-top: 1.2pt solid #000; border-bottom: 0.6pt solid #000; }
-  tbody tr.mid { border-top: 0.6pt solid #000; }
-  tbody tr.last { border-bottom: 1.2pt solid #000; }
-  .tablewrap { break-inside: avoid; margin: 6pt 0; }
-  ol.refs { padding-left: 1.6em; margin: 0; font-size: 8pt; }
-  ol.refs li { margin-bottom: 2pt; text-align: left; }
+  tr.mid { border-top: 0.6pt solid #000; }
+  tbody tr:last-child { border-bottom: 1.2pt solid #000; }
+  .tablewrap { break-inside: avoid; margin: 5pt 0; }
+  .fig { break-inside: avoid; margin: 4pt 0 6pt; text-align: center; }
+  .fig svg { width: 100%; height: auto; }
+  .figcap { font-size: 8pt; text-align: justify; margin-top: 2pt; }
+  .figcap b { font-weight: normal; font-variant: small-caps; }
+  ol.refs { padding-left: 1.6em; margin: 0; font-size: 7.8pt; }
+  ol.refs li { margin-bottom: 1.5pt; text-align: left; }
   sub, sup { line-height: 0; }
 </style>
 </head>
 <body>
 <div class="title">EnsembleSE-Indic: Diverse-Member Neural Ensembles for Noise Event Removal in Indian-Language Speech</div>
-<div class="subtitle">IndoML Datathon 2026, Track 2 — Team marchmello01</div>
-<div class="author">Mohammad Agwan<br><span class="aff">Team marchmello01 · mohammad.agwan@nuvo.ai</span></div>
+<div class="subtitle">IndoML Datathon 2026, Track 2 (Noise Event Removal) — Team marchmello01</div>
+<div class="author">Mohammad Agwan<br><span class="aff">Team marchmello01 · mohammad.agwan@nuvo.ai · github.com/marchmello1/EnsembleSE-Indic</span></div>
 
 <div class="cols">
 <div class="abstract"><i>Abstract</i>—Track 2 asks for the removal of transient noise events from Indian-language
-speech, scored by SI-SDR on synthetic mixtures plus the reduction in word error rate of the mandated SraVaani
-recogniser on all clips. We submit a single audio-only pipeline applied identically to every clip: a fixed ensemble
-of four enhancement architectures (MP-SENet, URGENT BSRNN, TF-GridNet and TF-Locoformer; seven checkpoints) with
-eight-view test-time augmentation. All networks are fine-tuned with an SI-SDR loss plus a recognition (RNNT) loss
-through the frozen SraVaani model, on mixtures of released and leakage-filtered public Vaani speech with reused
-validation noise events. The largest late gains came from averaging diverse TF-Locoformer members rather than
-training one model longer. The final system scores 19.8688 Combined on the Phase 2 test set (SI-SDR 16.29 dB,
-pooled ΔWER 3.58); our Phase 1 system placed 2nd.</div>
+speech, scored by SI-SDR on synthetic mixtures plus the reduction in word error rate (ΔWER) of the mandated SraVaani
+recogniser on all clips. We submit one audio-only pipeline applied identically to every clip: a fixed ensemble of
+four enhancement architectures (MP-SENet, URGENT BSRNN, TF-GridNet, TF-Locoformer) whose TF-Locoformer slot fuses
+four checkpoints from deliberately different training lineages, with eight-view test-time augmentation. All
+networks are trained with SI-SDR plus a recognition loss back-propagated through the frozen SraVaani model, on
+released speech and on public Vaani speech filtered against every test input by audio fingerprinting. Fusing
+diverse members was worth +0.100 Combined, more than any amount of further training of the same model. The final
+system scores 19.8688 Combined on the Phase 2 test set (SI-SDR 16.29 dB, pooled ΔWER 3.58); our Phase 1 system
+placed 2nd.</div>
+<div class="keywords"><i>Index Terms</i>—speech enhancement, noise event removal, model ensembling, ASR-aware
+training, Indian languages.</div>
 
-<h2><span class="num">I.</span>Training Data and Preprocessing</h2>
-<p><span class="run">Released data.</span> We use the released Track 2 training clean/noisy pairs, holding out two
-Indian states for validation, the released natural clips (only for a preservation loss), and the released
+<h2><span>I.</span> Introduction and Contributions</h2>
+<p>The task scores each system twice: waveform fidelity on synthetic clips (SI-SDR against a clean reference) and
+usefulness to a fixed recogniser on all 3,178 clips, 2,079 of them natural recordings without a reference. A
+system must therefore remove loud, short noise events without introducing artefacts that the recogniser mishears,
+and without damaging real recordings. The rules require one general enhancement for every clip: no routing,
+passthrough or noise dictionary. Our contributions are:</p>
+<ul class="contrib">
+<li><b>Diverse-member fusion.</b> Averaging TF-Locoformer checkpoints from different training lineages improved the
+official score by +0.100, whereas continuing to train existing members gave diminishing and finally negative
+returns (Section IV).</li>
+<li><b>Leakage-safe external speech.</b> A landmark-fingerprint index of all test inputs removes any public Vaani
+recording, and any speaker, that overlaps the test set before it is used for training.</li>
+<li><b>Recognition-aware training</b> with an RNNT loss through the frozen mandated ASR, plus a teacher-preservation
+loss that keeps natural recordings intact.</li>
+<li><b>An error decomposition</b> showing that the remaining ASR gap to clean speech is 71% substitutions, and a
+documented set of recognition objectives that did <i>not</i> transfer, evaluated on the exact shipped package.</li>
+</ul>
+
+<h2><span>II.</span> Training Data and Preprocessing</h2>
+<p><span class="run">Released data.</span> The released Track 2 training clean/noisy pairs, with two Indian states
+held out for validation; the released natural clips (used only through the preservation loss); and the released
 validation set.</p>
-<p><span class="run">Reused validation noise (“d32” bank).</span> From the released validation pairs we extract
-518 noise-event recordings as noisy-minus-clean residuals. The organizers confirmed that training on validation
-noise is allowed. The bank is used for training only; inference uses no noise recordings.</p>
-<p><span class="run">Public Vaani speech (additional data).</span> We add 6,069 clean utterances from the public
-Vaani corpus [1]. To prevent test leakage we build an audio landmark-fingerprint index of all 3,178 Phase 2 test
-inputs, drop every Vaani recording matching a test input with ≥ 12 votes, drop all recordings of any speaker with
-≥ 20 matches, and exclude the two held-out states. Targets are pause-gated to match the convention of the
-organizers' clean references. The organizers confirmed that public Vaani training is allowed.</p>
-<p><span class="run">Augmentation.</span> Every trainer remixes on the fly: clean speech plus d32 events (placed at
-+9 ± 3 dB event-to-speech level until about 34% of the clip is covered), released training residuals, or the
-clip's own noise, followed by peak normalisation to 0.95.</p>
+<p><span class="run">Reused validation noise (“d32” bank).</span> We extract 518 noise-event recordings from the
+released validation pairs as noisy-minus-clean residuals. The organizers confirmed that training on validation
+noise is allowed. The bank is used only to synthesise training mixtures; inference uses no noise recordings.</p>
+<p><span class="run">Public Vaani speech (additional dataset).</span> We add 6,069 clean utterances from the public
+Vaani corpus [1]. For leakage control we index spectral landmark pairs of all 3,178 Phase 2 test inputs, remove
+every Vaani recording that matches a test input with ≥ 12 aligned votes, remove all recordings of any speaker with
+≥ 20 matches, and exclude the held-out states. Targets are pause-gated to follow the convention of the organizers'
+clean references. The organizers confirmed that public Vaani training is allowed.</p>
+<p><span class="run">Augmentation pipeline.</span> Each trainer remixes on the fly: a clean utterance plus one of
+(a) d32 events placed at a random offset with event-to-speech level drawn from 𝒩(9, 3²) dB until ≈ 34% of the clip
+is covered, (b) a released training residual, or (c) the clip's own released noise; then peak normalisation to 0.95.</p>
 
-<h2><span class="num">II.</span>Proposed Method</h2>
-<p><span class="run">Architectures and pretrained models.</span> (i) MP-SENet [2], magnitude/phase enhancement, from
-the public DNS checkpoint; (ii) BSRNN from the URGENT challenge baseline [3]; (iii) TF-GridNet [4], from the URGENT
-baseline; (iv) TF-Locoformer [5], from MERL's public DNS checkpoint. SraVaani-1.0 [6] (ARTPARK-IISc, Hugging Face)
-is used frozen for the recognition loss and for transcription; ESPnet [7] supplies the STFT front end.</p>
-<p><span class="run">Loss.</span> On synthetic mixtures</p>
-<p class="eq">𝓛 = 2 · (−SI-SDR(ŝ, s)) + 3 · 𝓛<sub>RNNT</sub>(ŝ, y),</p>
-<p class="first">where 𝓛<sub>RNNT</sub> passes the enhanced waveform through SraVaani's frozen encoder and joint
-network with the released transcript y. On natural clips (no clean reference) we use
-0.2 · ‖ŝ − s̃‖<sub>1</sub> / ‖s̃‖<sub>1</sub> against a frozen teacher output s̃, which prevents the
-enhancer from damaging real recordings. Optimiser: AdamW, gradient clipping at 3.</p>
-<p><span class="run">Training strategy.</span> Each network is first adapted on released data, then on d32 remixes
-and on the leakage-filtered Vaani speech. Continuation rounds of 40k steps at learning rate 5·10<sup>−6</sup>
-(single H100/H200 GPU each) refined the TF-Locoformer and TF-GridNet. The final TF-Locoformer slot averages four
-checkpoints from different lineages: the scaled Vaani recipe (60k steps plus four continuation rounds), a
-released-data recipe with natural preservation continued to 33k steps, and two reused-noise specialists (d32-only
-mixtures) initialised from different points of the first lineage.</p>
-<p><span class="run">Inference.</span> The ensemble is fixed:
-b = 0.3·MP + 0.7·g·BSRNN (g: least-squares gain between the two outputs), c = 0.3·b + 0.7·TFGridNet, and
-ŝ = 0.3·c + 0.7·Loco̅, where Loco̅ is the equal average of the four peak-normalised TF-Locoformer outputs. BSRNN
-input is level-normalised to RMS 0.10. Each network runs on eight views (polarity ±1 × shifts of 0, 40, 80, 120
-samples), which are inverted and averaged. Every clip receives identical processing: no routing, passthrough,
-noise dictionary or template search.</p>
-<p><span class="run">Phase 1 system.</span> Our Phase 1 entry (2nd place) used a binary CRNN noise-event span
-detector and two event-local MP-SENet experts fine-tuned with an ASR loss; the code and checkpoints are in the
-repository's <span class="run">phase1/</span> folder.</p>
+<div class="fig">
+<svg viewBox="0 0 340 168" xmlns="http://www.w3.org/2000/svg" font-family="Times New Roman, serif" font-size="7.6">
+  <defs><marker id="a" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#000"/></marker></defs>
+  <rect x="2" y="66" width="44" height="30" rx="2" fill="#fff" stroke="#000"/>
+  <text x="24" y="79" text-anchor="middle">noisy</text><text x="24" y="88" text-anchor="middle">input x</text>
+  <line x1="46" y1="81" x2="60" y2="81" stroke="#000" marker-end="url(#a)"/>
+  <rect x="62" y="56" width="46" height="50" rx="2" fill="#f2f2f2" stroke="#000"/>
+  <text x="85" y="72" text-anchor="middle">8 TTA views</text><text x="85" y="82" text-anchor="middle">polarity ±1</text>
+  <text x="85" y="91" text-anchor="middle">× shift 0–120</text>
+  <line x1="108" y1="81" x2="118" y2="81" stroke="#000"/>
+  <line x1="118" y1="14" x2="118" y2="150" stroke="#000"/>
+  <g>
+    <line x1="118" y1="14" x2="130" y2="14" stroke="#000" marker-end="url(#a)"/>
+    <rect x="132" y="4" width="78" height="20" rx="2" fill="#fff" stroke="#000"/><text x="171" y="17" text-anchor="middle">MP-SENet</text>
+    <line x1="118" y1="48" x2="130" y2="48" stroke="#000" marker-end="url(#a)"/>
+    <rect x="132" y="38" width="78" height="20" rx="2" fill="#fff" stroke="#000"/><text x="171" y="51" text-anchor="middle">BSRNN (RMS 0.10)</text>
+    <line x1="118" y1="82" x2="130" y2="82" stroke="#000" marker-end="url(#a)"/>
+    <rect x="132" y="72" width="78" height="20" rx="2" fill="#fff" stroke="#000"/><text x="171" y="85" text-anchor="middle">TF-GridNet</text>
+    <line x1="118" y1="128" x2="130" y2="128" stroke="#000" marker-end="url(#a)"/>
+    <rect x="132" y="104" width="78" height="48" rx="2" fill="#e6e6e6" stroke="#000"/>
+    <text x="171" y="115" text-anchor="middle">TF-Locoformer ×4</text>
+    <text x="171" y="125" text-anchor="middle" font-size="6.6">Vaani · released-data</text>
+    <text x="171" y="134" text-anchor="middle" font-size="6.6">2 reused-noise specialists</text>
+    <text x="171" y="145" text-anchor="middle" font-size="6.6">equal avg. (peak-norm.)</text>
+  </g>
+  <line x1="210" y1="14" x2="236" y2="14" stroke="#000"/><line x1="210" y1="48" x2="236" y2="48" stroke="#000"/>
+  <line x1="236" y1="14" x2="236" y2="48" stroke="#000"/><line x1="236" y1="31" x2="246" y2="31" stroke="#000" marker-end="url(#a)"/>
+  <circle cx="254" cy="31" r="7.5" fill="#fff" stroke="#000"/><text x="254" y="34" text-anchor="middle">b</text>
+  <text x="265" y="34" font-size="6.6">= .3 MP + .7 g·BS</text>
+  <line x1="210" y1="82" x2="254" y2="82" stroke="#000"/><line x1="254" y1="38.5" x2="254" y2="74" stroke="#000" marker-end="url(#a)"/>
+  <circle cx="254" cy="82" r="7.5" fill="#fff" stroke="#000"/><text x="254" y="85" text-anchor="middle">c</text>
+  <text x="265" y="85" font-size="6.6">= .3 b + .7 TFG</text>
+  <line x1="210" y1="128" x2="254" y2="128" stroke="#000"/><line x1="254" y1="89.5" x2="254" y2="120" stroke="#000" marker-end="url(#a)"/>
+  <circle cx="254" cy="128" r="7.5" fill="#fff" stroke="#000"/><text x="254" y="131" text-anchor="middle">ŝ</text>
+  <text x="263" y="110" font-size="6.6">= .3 c + .7 Loco</text>
+  <line x1="261.5" y1="128" x2="282" y2="128" stroke="#000" marker-end="url(#a)"/>
+  <rect x="284" y="112" width="54" height="32" rx="2" fill="#fff" stroke="#000"/>
+  <text x="311" y="124" text-anchor="middle">enhanced ŝ</text><text x="311" y="134" text-anchor="middle">+ SraVaani</text>
+  <text x="311" y="142" text-anchor="middle" font-size="6.4">transcript</text>
+  <text x="200" y="164" text-anchor="middle" font-size="6.6">each network: average of its 8 un-transformed TTA outputs</text>
+</svg>
+<div class="figcap"><b>Fig. 1.</b> Inference pipeline. Every clip follows the same path; fusion weights are fixed. g is
+the least-squares gain between the BSRNN and MP-SENet outputs, computed from those outputs only.</div>
+</div>
 
-<h2><span class="num">III.</span>Results and Conclusion</h2>
+<h2><span>III.</span> Proposed Method</h2>
+<h3>A. Architectures and pretrained models</h3>
+<p>(i) MP-SENet [2], parallel magnitude and phase denoising, from the public DNS checkpoint; (ii) BSRNN, the URGENT
+challenge baseline [3]; (iii) TF-GridNet [4], from the URGENT baseline; (iv) TF-Locoformer [5], from MERL's public
+DNS checkpoint. SraVaani-1.0 [6] is used frozen, both inside the training loss and to transcribe outputs; ESPnet [7]
+supplies the STFT encoder and decoder.</p>
+<h3>B. Training objective</h3>
+<p>For a synthetic mixture with clean target <i>s</i> and transcript <i>y</i>, the enhancer output ŝ is trained with</p>
+<div class="eq"><div class="body"><math display="block"><mrow><msub><mi>ℒ</mi><mtext>syn</mtext></msub><mo>=</mo><mn>2</mn><mo>⁢</mo><mrow><mo>(</mo><mo>−</mo><mtext>SI-SDR</mtext><mo>(</mo><mover><mi>s</mi><mo>^</mo></mover><mo>,</mo><mi>s</mi><mo>)</mo><mo>)</mo></mrow><mo>+</mo><mn>3</mn><mo>⁢</mo><msub><mi>ℒ</mi><mtext>RNNT</mtext></msub><mo>(</mo><mover><mi>s</mi><mo>^</mo></mover><mo>,</mo><mi>y</mi><mo>)</mo></mrow></math></div><div class="num">(1)</div></div>
+<p class="first">where ℒ<sub>RNNT</sub> passes ŝ through SraVaani's frozen encoder and joint network, so the gradient
+rewards audio the recogniser transcribes correctly. Natural clips have no clean reference, so we only discourage
+change relative to a frozen teacher output s̃:</p>
+<div class="eq"><div class="body"><math display="block"><mrow><msub><mi>ℒ</mi><mtext>nat</mtext></msub><mo>=</mo><mn>0.2</mn><mo>⁢</mo><mfrac><msub><mrow><mo>‖</mo><mover><mi>s</mi><mo>^</mo></mover><mo>−</mo><mover><mi>s</mi><mo>~</mo></mover><mo>‖</mo></mrow><mn>1</mn></msub><msub><mrow><mo>‖</mo><mover><mi>s</mi><mo>~</mo></mover><mo>‖</mo></mrow><mn>1</mn></msub></mfrac></mrow></math></div><div class="num">(2)</div></div>
+<p class="first">Optimisation uses AdamW with gradient clipping at 3; one network per GPU.</p>
+<h3>C. Training strategy and member lineages</h3>
+<p>Each network is adapted first on released data and then on d32 remixes and filtered Vaani speech. Continuation
+rounds of 40k steps at learning rate 5×10<sup>−6</sup> refine TF-GridNet and the first TF-Locoformer lineage. The
+TF-Locoformer slot then fuses four members that differ in data recipe or starting point (Table I).</p>
 <div class="tablewrap">
 <table>
-<caption>Table I. Official Phase 2 results of successive systems</caption>
-<thead><tr><th>System</th><th>SI-SDR</th><th>ΔWER syn</th><th>ΔWER nat</th><th>Combined</th></tr></thead>
+<caption>Table I. TF-Locoformer members of the final system</caption>
+<thead><tr><th>Member</th><th>Training recipe</th><th>Steps</th></tr></thead>
 <tbody>
-<tr><td>Ensemble, 1 Loco (F6)</td><td>16.048</td><td>10.174</td><td>0.353</td><td>19.547</td></tr>
-<tr><td>+ continuation rounds (F11)</td><td>16.170</td><td>10.263</td><td>0.370</td><td>19.709</td></tr>
-<tr><td>+ round 3, TTA×8 (F12b)</td><td>16.197</td><td>10.299</td><td>0.379</td><td>19.754</td></tr>
-<tr><td>+ 3 diverse Loco (F13)</td><td>16.270</td><td>10.432</td><td>0.357</td><td>19.854</td></tr>
-<tr><td><b>+ 4th Loco member (final)</b></td><td><b>16.289</b></td><td><b>10.432</b></td><td><b>0.350</b></td><td><b>19.869</b></td></tr>
-<tr class="mid"><td>3 Loco, longer training (F14)</td><td>16.280</td><td>10.374</td><td>0.341</td><td>19.835</td></tr>
-<tr class="last"><td>+ 5th Loco member (F16)</td><td>16.286</td><td>10.452</td><td>0.328</td><td>19.857</td></tr>
+<tr><td>1. Vaani-scaled</td><td>d32 remix + filtered Vaani, then 4 continuation rounds</td><td>60k + 4 rounds</td></tr>
+<tr><td>2. Released-data</td><td>released speech, natural preservation (Eq. 2)</td><td>33k</td></tr>
+<tr><td>3. Noise specialist A</td><td>d32-only mixtures, from member-1 lineage</td><td>40k</td></tr>
+<tr><td>4. Noise specialist B</td><td>d32-only mixtures, from a later member-1 checkpoint</td><td>14k</td></tr>
 </tbody>
 </table>
 </div>
-<p class="first">Table I lists official Phase 2 scores (Combined = SI-SDR + pooled ΔWER; pooled ΔWER ≈
-0.35·ΔWER<sub>syn</sub> + 0.65·ΔWER<sub>nat</sub>). The final system reaches <b>19.8688</b>.</p>
-<p><span class="run">Key findings.</span> (1) <i>Diversity beats depth.</i> Adding differently-trained
-TF-Locoformer members gave the largest late gain (+0.100 for F13), while continuing to train existing members gave
-smaller, eventually negative returns (F14). (2) <i>Only SI-backed gains transfer.</i> Candidates whose local gain
-was purely a few fewer ASR errors (F14, F16) scored lower officially; candidates that also improved hard-clip
-SI-SDR transferred. (3) <i>Recognition-specific objectives did not transfer.</i> A matched TDT loss, RNNT weights of
-10× and 25×, an artifact-boosted SDR loss, teacher labels, a generative Schrödinger-bridge enhancer and second-stage
-denoisers were all neutral or negative under the exact package. (4) <i>Where the remaining error is.</i> On held-out
-synthetic clips our output leaves 615 SraVaani word errors against 507 for the clean reference; 71% of that gap is
-substitutions (residual distortion), not deletions. (5) <i>Evaluate the shipped package.</i> A cascade that looked
-+0.45 pooled-ΔWER better in a no-TTA harness gave nothing once evaluated package-to-package with test-time
-augmentation.</p>
-<p><span class="run">Conclusion.</span> A compliant, uniform neural ensemble reached 19.87 Combined in Phase 2,
-with the 2nd-best SI-SDR among the top teams, after a 2nd-place Phase 1. Its main limitation is synthetic ΔWER:
-the recogniser still substitutes words on our enhanced speech. Closing that gap appears to need enhancement
-objectives that track recognition more directly than the surrogate losses we tested. Code and checkpoints:
-github.com/marchmello1/EnsembleSE-Indic.</p>
+<h3>D. Inference</h3>
+<p>Each network processes eight views of the input (polarity ±1 × leading shifts of 0, 40, 80 and 120 samples); the
+views are inverted and averaged. Outputs are fused with fixed weights (Fig. 1):</p>
+<div class="eq"><div class="body"><math display="block"><mrow><mover><mi>s</mi><mo>^</mo></mover><mo>=</mo><mn>0.3</mn><mo>[</mo><mn>0.3</mn><mi>b</mi><mo>+</mo><mn>0.7</mn><mspace width="0.15em"/><mtext>TFG</mtext><mo>]</mo><mo>+</mo><mn>0.7</mn><mspace width="0.15em"/><mover accent="true"><mtext>Loco</mtext><mo stretchy="true">¯</mo></mover><mo>,</mo><mspace width="0.4em"/><mi>b</mi><mo>=</mo><mn>0.3</mn><mspace width="0.15em"/><mtext>MP</mtext><mo>+</mo><mn>0.7</mn><mi>g</mi><mspace width="0.15em"/><mtext>BS</mtext></mrow></math></div><div class="num">(3)</div></div>
+<p class="first">giving effective weights of 0.027 (MP-SENet), 0.063 (BSRNN), 0.21 (TF-GridNet) and 0.70
+(TF-Locoformer, 0.175 per member). BSRNN input is level-normalised to RMS 0.10. Every clip receives identical
+processing: no routing, passthrough, noise dictionary or template search. Runtime is about 12 GPU-seconds per clip
+on an H100.</p>
+<p><span class="run">Phase 1 system (2nd place).</span> A binary CRNN noise-event span detector and two event-local
+MP-SENet experts fine-tuned with an ASR loss; code and checkpoints are in the repository's <i>phase1/</i> folder.</p>
+
+<h2><span>IV.</span> Results</h2>
+<div class="tablewrap">
+<table>
+<caption>Table II. Official Phase 2 results of successive systems</caption>
+<thead><tr><th>System</th><th>SI-SDR</th><th>ΔWER<sub>syn</sub></th><th>ΔWER<sub>nat</sub></th><th>Combined</th></tr></thead>
+<tbody>
+<tr><td>Ensemble, 1 Loco member</td><td>16.048</td><td>10.174</td><td>0.353</td><td>19.547</td></tr>
+<tr><td>+ continuation rounds</td><td>16.170</td><td>10.263</td><td>0.370</td><td>19.709</td></tr>
+<tr><td>+ round 3, TTA×8</td><td>16.197</td><td>10.299</td><td>0.379</td><td>19.754</td></tr>
+<tr><td>+ members 2, 3 (3 Loco)</td><td>16.270</td><td>10.432</td><td>0.357</td><td>19.854</td></tr>
+<tr><td><b>+ member 4 (final)</b></td><td><b>16.289</b></td><td><b>10.432</b></td><td><b>0.350</b></td><td><b>19.869</b></td></tr>
+<tr class="mid"><td>3 Loco, members trained longer</td><td>16.280</td><td>10.374</td><td>0.341</td><td>19.835</td></tr>
+<tr><td>final + member 5</td><td>16.286</td><td>10.452</td><td>0.328</td><td>19.857</td></tr>
+</tbody>
+</table>
+</div>
+<p>Table II lists official Phase 2 scores (Combined = SI-SDR + pooled ΔWER, pooled ΔWER ≈ 0.35 ΔWER<sub>syn</sub>
++ 0.65 ΔWER<sub>nat</sub>). Adding members 2 and 3 gave the largest single step (+0.100), and member 4 a further
++0.015. Training the same members longer (row 6) or adding a fifth member (row 7) lowered the score: both had
+improved only by a few ASR errors locally, and such gains did not transfer, while every change that also raised
+hard-clip SI-SDR in our package-level test did. Among the top-5 Phase 2 teams our SI-SDR is the second highest.</p>
+
+<div class="tablewrap">
+<table>
+<caption>Table III. SraVaani errors on 188 held-out synthetic clips (2,190 words)</caption>
+<thead><tr><th>Audio</th><th>Total</th><th>Substitutions</th><th>Deletions</th><th>Insertions</th></tr></thead>
+<tbody>
+<tr><td>Noisy input</td><td>800</td><td>400</td><td>384</td><td>16</td></tr>
+<tr><td>Ours (3-member system)</td><td>615</td><td>345</td><td>257</td><td>13</td></tr>
+<tr><td>Clean reference</td><td>507</td><td>268</td><td>230</td><td>9</td></tr>
+</tbody>
+</table>
+</div>
+<p><span class="run">Error analysis.</span> Table III decomposes recogniser errors. Enhancement removes 63% of the
+errors that are removable (185 of 293). Even the clean reference leaves 230 deletions, so deletions are largely
+intrinsic to the recogniser and transcripts; of our remaining 108-error gap to the clean reference, 77 (71%) are
+substitutions. The residual problem is therefore subtle distortion of speech that the recogniser mishears, not
+missing speech.</p>
+
+<div class="tablewrap">
+<table>
+<caption>Table IV. Changes that did not transfer (package-level, vs. incumbent)</caption>
+<thead><tr><th>Change</th><th>Hard-clip SI-SDR</th><th>ASR errors (syn / nat)</th></tr></thead>
+<tbody>
+<tr><td>RNNT weight 10× / 25× (vs 3×)</td><td>−0.03 / −0.03</td><td>−3 / 0, −3 / −5</td></tr>
+<tr><td>Artifact-boosted SDR loss [8]</td><td>−0.003</td><td>+6 / −4</td></tr>
+<tr><td>FRCRN second-stage denoiser</td><td>+0.01</td><td>+6 / +3</td></tr>
+<tr><td>3–5% input mixed back (observation adding)</td><td>−0.06 to −0.14</td><td>−2 to −5 / −1 to −3</td></tr>
+<tr><td>Fine-tuned Schrödinger-bridge member, 10% (harness)</td><td>+0.03</td><td>−8 / 0</td></tr>
+</tbody>
+</table>
+</div>
+<p class="first">Table IV summarises recognition-oriented changes evaluated on the exact shipped package (all eight TTA
+views): none moved recognition beyond noise level, consistent with the substitution-dominated gap. A matched TDT
+recognition loss and ASR teacher labels were likewise neutral or negative. A cascade that appeared +0.45 pooled
+ΔWER better in a faster evaluation harness without TTA gave nothing on the package, so all decisions were taken on
+package-level output.</p>
+
+<h2><span>V.</span> Conclusion</h2>
+<p>A compliant, uniform neural ensemble reached 19.87 Combined in Phase 2 after a 2nd-place Phase 1. The decisive
+ingredient was diversity: fusing differently-trained TF-Locoformer members transferred to the hidden test set far
+better than further training of one model. The main limitation is synthetic ΔWER, where the remaining gap to clean
+speech consists mostly of word substitutions; closing it appears to need objectives that track the recogniser's
+decisions more directly than the surrogate losses tested here. Code, configurations and checkpoints are public.</p>
 
 <h2>References</h2>
 <ol class="refs">
@@ -136,11 +255,13 @@ github.com/marchmello1/EnsembleSE-Indic.</p>
 phase spectra,” in Proc. Interspeech, 2023.</li>
 <li>K. Saijo et al., “Interspeech 2025 URGENT speech enhancement challenge,” in Proc. Interspeech, 2025.</li>
 <li>Z.-Q. Wang et al., “TF-GridNet: Integrating full- and sub-band modeling for speech separation,” IEEE/ACM
-TASLP, 2023.</li>
+TASLP, vol. 31, 2023.</li>
 <li>K. Saijo, G. Wichern, F. G. Germain, Z. Pan, J. Le Roux, “TF-Locoformer: Transformer with local modeling by
 convolution for speech separation and enhancement,” in Proc. IWAENC, 2024.</li>
 <li>ARTPARK-IISc, “SraVaani-1.0,” Hugging Face, https://huggingface.co/ARTPARK-IISc/SraVaani-1.0.</li>
 <li>S. Watanabe et al., “ESPnet: End-to-end speech processing toolkit,” in Proc. Interspeech, 2018.</li>
+<li>K. Iwamoto et al., “How bad are artifacts?: Analyzing the impact of speech enhancement errors on ASR,” in
+Proc. Interspeech, 2022.</li>
 </ol>
 </div>
 </body>
