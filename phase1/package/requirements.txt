@@ -1,0 +1,13 @@
+torch>=2.2
+torchaudio>=2.2
+transformers>=4.45
+huggingface-hub>=0.24
+soundfile>=0.12
+numpy>=1.24
+librosa>=0.10
+einops>=0.7
+scipy>=1.10
+sentencepiece>=0.2
+nemo_toolkit[asr]>=2.0
+pesq>=0.0.4
+joblib>=1.3

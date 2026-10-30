@@ -1,0 +1,131 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+
+\begin{document}
+
+\title{Diverse-Member Neural Ensembles for Noise Event Removal\\in Indian-Language Speech\\
+{\large IndoML Datathon 2026, Track 2 --- Team marchmello01}}
+
+\author{\IEEEauthorblockN{Mohammad Agwan}
+\IEEEauthorblockA{Team marchmello01\\ mohammad.agwan@nuvo.ai}}
+
+\maketitle
+
+\begin{abstract}
+Track 2 asks for the removal of transient noise events from Indian-language speech, scored by SI-SDR on synthetic
+mixtures plus the reduction in word error rate of the mandated SraVaani recogniser on all clips. We submit a single
+audio-only pipeline applied identically to every clip: a fixed ensemble of four enhancement architectures
+(MP-SENet, URGENT BSRNN, TF-GridNet and TF-Locoformer; seven checkpoints) with eight-view test-time augmentation.
+All networks are fine-tuned with an SI-SDR loss plus a recognition (RNNT) loss through the frozen SraVaani model, on
+mixtures of released and leakage-filtered public Vaani speech with reused validation noise events. The largest late
+gains came from averaging \emph{diverse} TF-Locoformer members rather than training one model longer. The final
+system scores 19.8688 Combined on the Phase~2 test set (SI-SDR 16.29\,dB, pooled $\Delta$WER 3.58).
+\end{abstract}
+
+\section{Training Data and Preprocessing}
+\textbf{Released data.} We use the released Track~2 training clean/noisy pairs, holding out two Indian states for
+validation, the released natural clips (only for a preservation loss), and the released validation set.
+
+\textbf{Reused validation noise (``d32'' bank).} From the released validation pairs we extract 518 noise-event
+recordings as noisy-minus-clean residuals. The organizers confirmed that training on validation noise is allowed.
+The bank is used for training only; inference uses no noise recordings.
+
+\textbf{Public Vaani speech (additional data).} We add 6{,}069 clean utterances from the public Vaani
+corpus~\cite{vaani}. To prevent test leakage, we build an audio landmark-fingerprint index of all 3{,}178 Phase~2
+test inputs, drop every Vaani recording matching a test input with $\geq 12$ votes, drop all recordings of any speaker
+with $\geq 20$ matches, and exclude the two held-out states. Targets are pause-gated to match the convention of the
+organizers' clean references. The organizers confirmed that public Vaani training is allowed.
+
+\textbf{Augmentation.} Every trainer remixes on the fly: clean speech plus d32 events (placed at $+9\pm3$\,dB
+event-to-speech level until $\sim$34\% of the clip is covered), released training residuals, or the clip's own
+noise, followed by peak normalisation to 0.95.
+
+\section{Proposed Method}
+\textbf{Architectures and pretrained models.} (i) MP-SENet~\cite{mpsenet}, magnitude/phase enhancement, from the
+public DNS checkpoint; (ii) BSRNN from the URGENT challenge baseline~\cite{urgent}; (iii) TF-GridNet~\cite{tfgridnet},
+from the URGENT baseline; (iv) TF-Locoformer~\cite{locoformer}, from MERL's public DNS checkpoint. SraVaani-1.0
+(ARTPARK-IISc, Hugging Face) is used frozen for the recognition loss and for transcription.
+
+\textbf{Loss.} On synthetic mixtures
+$\mathcal{L} = 2\,(-\mathrm{SI\text{-}SDR}(\hat s, s)) + 3\,\mathcal{L}_{\mathrm{RNNT}}(\hat s, y)$, where
+$\mathcal{L}_{\mathrm{RNNT}}$ passes the enhanced waveform through SraVaani's frozen encoder and joint network
+with the released transcript $y$. On natural clips (no clean reference) we use
+$0.2\,\|\hat s - \tilde s\|_1/\|\tilde s\|_1$ against a frozen teacher output $\tilde s$, which prevents the
+enhancer from damaging real recordings. Optimiser: AdamW, gradient clipping at 3.
+
+\textbf{Training strategy.} Each network is first adapted on released data, then on d32 remixes and on the
+leakage-filtered Vaani speech. Continuation rounds of 40k steps at learning rate $5\times10^{-6}$ (single
+H100/H200 GPU each) refined the TF-Locoformer and TF-GridNet. The final TF-Locoformer slot averages four checkpoints
+from \emph{different lineages}: the scaled Vaani recipe (60k steps plus four continuation rounds), a released-data
+recipe with natural preservation continued to 33k steps, and two reused-noise specialists (d32-only mixtures)
+initialised from different points of the first lineage.
+
+\textbf{Inference.} The ensemble is fixed:
+$b = 0.3\,\mathrm{MP} + 0.7\,g\,\mathrm{BSRNN}$ ($g$: least-squares gain between the two outputs),
+$c = 0.3\,b + 0.7\,\mathrm{TFGridNet}$, and
+$\hat s = 0.3\,c + 0.7\,\overline{\mathrm{Loco}}$, where $\overline{\mathrm{Loco}}$ is the equal average of the four
+peak-normalised TF-Locoformer outputs. BSRNN input is level-normalised to RMS 0.10. Each network runs on eight views
+(polarity $\pm1$ $\times$ shifts of 0, 40, 80, 120 samples), which are inverted and averaged. Every clip receives
+identical processing: no routing, passthrough, noise dictionary or template search.
+
+\section{Results and Conclusion}
+\begin{table}[t]
+\centering
+\caption{Official Phase 2 results of successive systems.}
+\label{tab:official}
+\begin{tabular}{lcccc}
+\toprule
+System & SI-SDR & $\Delta$WER syn & $\Delta$WER nat & Combined \\
+\midrule
+Ensemble, 1 Loco (F6) & 16.048 & 10.174 & 0.353 & 19.547 \\
++ continuation rounds (F11) & 16.170 & 10.263 & 0.370 & 19.709 \\
++ round 3, TTA$\times$8 (F12b) & 16.197 & 10.299 & 0.379 & 19.754 \\
++ 3 diverse Loco (F13) & 16.270 & 10.432 & 0.357 & 19.854 \\
+\textbf{+ 4th Loco member (final)} & \textbf{16.289} & \textbf{10.432} & \textbf{0.350} & \textbf{19.869} \\
+\midrule
+3 Loco, longer training (F14) & 16.280 & 10.374 & 0.341 & 19.835 \\
++ 5th Loco member (F16) & 16.286 & 10.452 & 0.328 & 19.857 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:official} lists official Phase~2 scores (Combined = SI-SDR + pooled $\Delta$WER; pooled
+$\Delta$WER $\approx 0.35\,\Delta$WER$_{\mathrm{syn}} + 0.65\,\Delta$WER$_{\mathrm{nat}}$). The final system
+reaches \textbf{19.8688}.
+
+\textbf{Key findings.} (1) \emph{Diversity beats depth.} Adding differently-trained TF-Locoformer members gave the
+largest late gain (+0.100 for F13), while continuing to train existing members gave smaller, eventually negative
+returns (F14). (2) \emph{Only SI-backed gains transfer.} Candidates whose local gain was purely a few fewer ASR
+errors (F14, F16) scored lower officially; candidates that also improved hard-clip SI-SDR transferred. (3)
+\emph{Recognition-specific objectives did not transfer.} A matched TDT loss, RNNT weights of $10\times$ and
+$25\times$, an artifact-boosted SDR loss, teacher labels, a generative Schr\"odinger-bridge enhancer and
+second-stage denoisers were all neutral or negative under the exact package. (4) \emph{Where the remaining error
+is.} On held-out synthetic clips our output leaves 615 SraVaani word errors against 507 for the clean reference;
+71\% of that gap is substitutions (residual distortion), not deletions. (5) \emph{Evaluate the shipped package.}
+A cascade that looked $+0.45$ pooled-$\Delta$WER better in a no-TTA harness gave nothing once evaluated
+package-to-package with test-time augmentation.
+
+\textbf{Conclusion.} A compliant, uniform neural ensemble reached 19.87 Combined, 2nd-best SI-SDR among the top
+teams. Its main limitation is synthetic $\Delta$WER: the recogniser still substitutes words on our enhanced
+speech. Closing that gap appears to need enhancement objectives that track recognition more directly than the
+surrogate losses we tested.
+
+\begin{thebibliography}{9}
+\bibitem{vaani} ARTPARK and IISc, ``Project Vaani,'' \url{https://vaani.iisc.ac.in}, 2025.
+\bibitem{mpsenet} Y.-X. Lu, Y. Ai, Z.-H. Ling, ``MP-SENet: A speech enhancement model with parallel denoising of
+magnitude and phase spectra,'' in \emph{Proc. Interspeech}, 2023.
+\bibitem{urgent} K. Saijo \emph{et al.}, ``Interspeech 2025 URGENT speech enhancement challenge,'' in
+\emph{Proc. Interspeech}, 2025.
+\bibitem{tfgridnet} Z.-Q. Wang \emph{et al.}, ``TF-GridNet: Integrating full- and sub-band modeling for speech
+separation,'' \emph{IEEE/ACM TASLP}, 2023.
+\bibitem{locoformer} K. Saijo, G. Wichern, F. G. Germain, Z. Pan, J. Le Roux, ``TF-Locoformer: Transformer with
+local modeling by convolution for speech separation and enhancement,'' in \emph{Proc. IWAENC}, 2024.
+\bibitem{sravaani} ARTPARK-IISc, ``SraVaani-1.0,'' Hugging Face, \url{https://huggingface.co/ARTPARK-IISc/SraVaani-1.0}.
+\bibitem{espnet} S. Watanabe \emph{et al.}, ``ESPnet: End-to-end speech processing toolkit,'' in \emph{Proc.
+Interspeech}, 2018.
+\end{thebibliography}
+
+\end{document}

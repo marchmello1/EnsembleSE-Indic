@@ -1,0 +1,17 @@
+{
+  "scope": "Two newly installed environments; two-clip end-to-end parity verified, not full independent review",
+  "environments": {
+    "enhancement": {
+      "python": "Python 3.10.12",
+      "pip_check": "PASS",
+      "lock_file": "enhancement.lock.txt",
+      "installed_distribution_count": 116
+    },
+    "asr": {
+      "python": "Python 3.10.12",
+      "pip_check": "PASS",
+      "lock_file": "asr.lock.txt",
+      "installed_distribution_count": 205
+    }
+  }
+}
