@@ -1,13 +1,16 @@
-# IndoML Datathon 2026 — Track 2 (Noise Event Removal) — team marchmello01
+# LocoFuse — diverse-member neural ensembles for noise event removal
 
-Speech enhancement that removes noise events from Indian-language speech while keeping it recognisable by the
-mandated ASR model (SraVaani-1.0). The final Phase 2 system is a fixed ensemble of four neural enhancer
-architectures (seven checkpoints) with eight-view test-time augmentation, applied identically to every clip.
+**IndoML Datathon 2026 · Track 2 (Noise Event Removal) · team marchmello01 · 2nd place in Phase 1**
+
+LocoFuse removes noise events from Indian-language speech while keeping it recognisable by the mandated ASR model
+(SraVaani-1.0). The final Phase 2 system is a fixed ensemble of four neural enhancer architectures (seven
+checkpoints) whose TF-Locoformer slot fuses four differently-trained members, with eight-view test-time
+augmentation, applied identically to every clip.
 
 | Phase | Result |
 |---|---|
+| **Phase 1** | **2nd place** on the Track 2 leaderboard — event-local MP-SENet system, verification package in `phase1/` |
 | **Phase 2 (final)** | **Combined 19.8688** — SI-SDR 16.2889 dB (1,099 synthetic clips) + pooled ΔWER 3.5799 (3,178 clips); ΔWER synthetic 10.4323, natural 0.3501; ASR audit PASS |
-| Phase 1 | event-local MP-SENet system, verification package in `phase1/` (20.18 Combined on our speaker/state-held-out 188-clip split) |
 
 Contact: Mohammad Agwan (team marchmello01), mohammad.agwan@nuvo.ai
 
