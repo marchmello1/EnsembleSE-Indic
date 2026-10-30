@@ -34,7 +34,7 @@ phase1/
   package/                   Phase 1 verification package as submitted (code + three small checkpoints)
   train/                     Phase 1 detector and MP-SENet expert training scripts
 docs/
-  technical_report.pdf       3-page IEEE-format report (source: technical_report.tex)
+  technical_report.pdf       IEEE-format technical report (2 pages; built from technical_report.html, LaTeX source technical_report.tex)
 ```
 
 ## Inference (Phase 2 final system)
